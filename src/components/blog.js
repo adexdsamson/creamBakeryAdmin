@@ -12,8 +12,9 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
+import {connect} from 'react-redux';
+import {Delete} from '@material-ui/icons';
+import {DeleteBlog} from '../utilities/firebase';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import smart from 'smart-truncate';
@@ -21,6 +22,8 @@ import smart from 'smart-truncate';
 const useStyles = makeStyles(theme => ({
   card: {
     maxWidth: 345,
+    display: 'inline-block',
+    margin: '12px'
   },
   media: {
     height: 0,
@@ -46,8 +49,13 @@ function BlogReviewCard({views}) {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = (id) => {
-    setExpanded({id:!expanded});
+    setExpanded({id: !expanded});
   };
+
+  const handleDelete = (id) => {
+    console.log(id)
+    DeleteBlog(id)
+  }
 
   return (
     <Grid className="d-inline">
@@ -78,24 +86,24 @@ function BlogReviewCard({views}) {
             </Typography>
           </CardContent>
           <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon />
+            <IconButton
+              onClick={handleDelete} 
+              aria-label="add to favorites">
+              <Delete />
             </IconButton>
-            <IconButton aria-label="share">
-              <ShareIcon />
-            </IconButton>
+            
             <IconButton
               className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded,
               })}
               onClick={view => handleExpandClick(view.id)}
-              aria-expanded={view.id}
+              aria-expanded={expanded}
               aria-label="show more"
             >
               <ExpandMoreIcon />
             </IconButton>
           </CardActions>
-          <Collapse in={view.id} timeout="auto" unmountOnExit>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent>
               <Typography paragraph>Method:</Typography>
               <Typography paragraph>
@@ -110,4 +118,4 @@ function BlogReviewCard({views}) {
 }
 
 
-export default BlogReviewCard
+export default connect(null, {DeleteBlog})(BlogReviewCard)

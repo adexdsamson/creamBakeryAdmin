@@ -5,14 +5,14 @@ import { withStyles } from '@material-ui/core';
 import {connect} from 'react-redux';
 import {fetchChef, postChef, storageRef} from '../../utilities/firebase';
 import {clearChef} from '../../store/action';
-import {checkValidityInput} from '../../utilities/checkValidityInput';
+import Form from '../../components/Form';
+import { Field } from 'redux-form';
+import renderInput from '../../components/renderInput';
 import FileUploader from 'react-firebase-file-uploader';
-import {Button} from 'react-bootstrap';
 import ElevatedTab from '../../components/Tab';
 import {Row, Col} from 'react-bootstrap';
-import Input from '../../components/Input';
 import Avatar from '../../components/Avatar';
-import { Grid, Typography, Tab, CircularProgress} from '@material-ui/core';
+import { Grid, Typography, Tab} from '@material-ui/core';
 import Wallpaper from '../../assets/img/users/icon-72x72.png';
 import { green } from '@material-ui/core/colors';
 import TabPanel from '../../components/TabPanel';
@@ -39,39 +39,10 @@ const styles = theme => ({
 class Chef extends Component {
   state = { 
     value: 0 ,
-    isFormValid: false,
-    success: false,
-    isLoading: false,
-    formError: false,
     imageURL: '',
     isUploading: false,
     progress: 0,
-    form: {
-      name: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-      job: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-    }
+    
   };
 
 
@@ -84,21 +55,16 @@ class Chef extends Component {
     console.error(error);
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleSubmit = values => {
     this.setState({ isLoading: true });
-    let submitData = {};
-    let validForm = true;
-    for (let key in this.state.form) {
-      submitData[key] = this.state.form[key].value;
-      validForm = this.state.form[key].valid && validForm;
+    let submitData = {
+      title: values.name,
+      body: values.position,
+      img: this.state.imageURL
     };
-    if(validForm) {
-      let Data = {...submitData, img: this.state.imageURL}
-      this.props.postChef(Data);
-      this.setState({ isLoading: false});
-      alert('Post Succesful!');
-    };
+    this.props.postChef(submitData);
+    this.setState({ isLoading: false});
+    alert('Post Succesful!');
   };
 
   handleChange = (e, val) => {
@@ -118,28 +84,6 @@ class Chef extends Component {
       });
   };
 
-  inputHandler = (e, form) => {
-    const updatedForm = {
-      ...this.state.form
-    };
-    const updatedFormElement = {
-      ...updatedForm[form]
-    };
-    let formValid = true;
-    updatedFormElement.value = e.target.value;
-    updatedFormElement.valid = checkValidityInput(
-      updatedFormElement.value,
-      updatedFormElement.validation
-    );
-    updatedFormElement.touch = true;
-    updatedForm[form] = updatedFormElement;
-
-    for (let eachInput in updatedForm) {
-      formValid = updatedForm[eachInput].valid && formValid;
-      //console.log(formValid)
-    }
-    this.setState({ form: updatedForm, isFormValid: formValid });
-  };
 
   componentDidMount(){
     this.props.fetchChef();
@@ -151,23 +95,28 @@ class Chef extends Component {
 
   render() { 
     const { classes } = this.props;
-    const { value, isFormValid, isLoading } = this.state;
+    const { value, isUploading, progress, imageURL } = this.state;
 
-    return ( 
-      <DashboardLayout title='Chefs' subtitle="Trained professional bakers" icon={<ChefIcon />}>
+    return (
+      <DashboardLayout
+        title="Chefs"
+        subtitle="Trained professional bakers"
+        icon={<ChefIcon />}
+      >
         <Grid className={classes.root} container spacing={4}>
           <ElevatedTab
             value={value}
             change={(e, value) => this.handleChange(e, value)}
           >
-            <Tab label='Chefs' />
-            <Tab label='Profile' />
+            <Tab label="Chefs" />
+            <Tab label="Profile" />
           </ElevatedTab>
         </Grid>
         <Grid>
           <TabPanel value={value} index={0}>
             <Grid container sm={12}>
               <Card>
+                <Typography variant="body2">Chef list</Typography>
                 <ChefView />
               </Card>
             </Grid>
@@ -175,33 +124,36 @@ class Chef extends Component {
           <TabPanel value={value} index={1}>
             <Grid container sm={12}>
               <Card>
-                <Typography variant="h5">Create Chef Profile</Typography>
+                <Typography variant="body2">Create Chef Profile</Typography>
                 <Grid>
                   <div className="container text-center">
-                    <Avatar size={150} src={this.state.imageURL || Wallpaper}/>
+                    <Avatar size={150} src={imageURL || Wallpaper} />
                   </div>
                 </Grid>
                 <Grid lg={12}>
-                  <form className="mt-3" onSubmit={this.handleSubmit}>
-                    <Input 
-                      label="Full Name" 
+                  <Form className="mt-3" onSubmit={this.handleSubmit}>
+                    <Field
+                      name="name"
+                      label="Full Name"
                       placeholder="Full Name"
-                      onChange={e => this.inputHandler(e, 'name')}
-                      {...this.state.form.name.elementConfig}
+                      type="text"
+                      component={renderInput}
                     />
-                    <Input 
-                      type="number" 
-                      label="Job" 
-                      placeholder="Job"
-                      onChange={e => this.inputHandler(e, 'job')}
-                      {...this.state.form.job.elementConfig}
+                    <Field
+                      name="position"
+                      label="Job"
+                      type="text"
+                      placeholder="Position"
+                      component={renderInput}
                     />
                     <Row>
                       <Col sm="2">
                         <Typography variant="h5">Image</Typography>
                       </Col>
                       <Col sm="10">
-                        {this.state.isUploading ? <p>Progress: {this.state.progress}</p> :
+                        {isUploading ? (
+                          <p>Progress: {progress}</p>
+                        ) : (
                           <FileUploader
                             accept="image/*"
                             name="thumbnail"
@@ -212,21 +164,17 @@ class Chef extends Component {
                             onUploadSuccess={this.handleUploadSuccess}
                             onProgress={this.handleProgress}
                           />
-                        
-                        }
+                        )}
                       </Col>
                     </Row>
-                    <Button type="submit" variant="outline-success" disabled={isFormValid && isLoading} className="pr-5 mt-4 pl-5">
-                      {isFormValid && isLoading ? <CircularProgress size={24} className={classes.buttonProgress} /> : 'Post' }
-                    </Button>
-                  </form>
+                  </Form>
                 </Grid>
               </Card>
             </Grid>
           </TabPanel>
         </Grid>
       </DashboardLayout>
-     );
+    );
   }
 }
  

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 import './index.css';
+import {connect} from 'react-redux';
+import {getResponseState} from '../../store/selector';
 import { Link } from 'react-router-dom';
 
 
 
-const Response = ({ show }) => {
-  const showHideClass = show ? 'res display-block' : 'res display-none';
+const Response = ({ Response }) => {
+  const showHideClass = Response ? 'res-display-block' : 'res-display-none';
   return (
     <div className={showHideClass}>
       <Row>
@@ -177,6 +179,7 @@ const Response = ({ show }) => {
   );
 };
 
+const mapStateToProps = state => getResponseState(state);
 
 
-export default Response;
+export default connect(mapStateToProps)(Response);

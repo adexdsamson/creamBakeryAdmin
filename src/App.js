@@ -4,6 +4,8 @@ import PageSpinner from './components/pageSpinner';
 import { ThemeProvider } from '@material-ui/styles';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import {fetchUser} from './utilities/firebase';
+import {connect} from 'react-redux';
 import Routes from './Routes';
 import theme from './theme';
 import 'react-perfect-scrollbar/dist/css/styles.css';
@@ -14,7 +16,9 @@ const browserHistory = createBrowserHistory();
 
 
 class App extends Component {
-  
+  componentDidMount(){
+   // this.props.fetchUser();
+  }
   render() {
     return (
       <ThemeProvider theme={theme}>
@@ -31,6 +35,11 @@ class App extends Component {
 }
 
 
+const mapStateToProps = state => {
+  return {
+    user: state.User
+  }
+}
 
 
-export default App;
+export default connect(mapStateToProps, {fetchUser})(App);

@@ -1,15 +1,16 @@
 import React from 'react';
 import OrderList from '../../components/orderlist';
 import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
+import {getOrderState} from '../../store/selector';
+import NoContent from '../../views/NoContent';
 
 
-const mapStateToProps = state => ({ order: state.Order });
+const mapStateToProps = state => ({ order: getOrderState(state) });
 
 const ConnectedList = ({order}) => (
   <div>
     {order.length ? <OrderList views={order}/> : 
-      <Typography variant="h5">No Order </Typography>
+      <NoContent title="No Order availiable"/>
     }
   </div>
 );

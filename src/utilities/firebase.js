@@ -2,7 +2,7 @@ import app from 'firebase/app';
 import 'firebase/auth';
 import '@firebase/storage';
 import '@firebase/firestore';
-import {BLOG, CATEGORY, CHEF, FEEDBACK, DELETE_BLOG, DELETE_CHEF, DELETE_RECIPE, DELETE_REVIEW} from '../store/action/type'
+import { ORDER_LIST, BLOG, CATEGORY, CHEF, FEEDBACK, DELETE_BLOG, DELETE_CHEF, DELETE_RECIPE, DELETE_REVIEW, FETCH_USER} from '../store/action/type'
 
 const config = {
   apiKey: "AIzaSyCiA2ze_-i6HOmfS51ApXmvLMazekEMdo8",
@@ -40,7 +40,7 @@ export const storageRef = app.storage().ref("images");
 
 
 //firebase firestore 
-
+export const UserDatabase = app.firestore().collection('User');
 export const OrderDatabase = app.firestore().collection('order');
 export const CategoryDatabase = app.firestore().collection('recipe');
 export const ReviewDatabase = app.firestore().collection('review');
@@ -48,6 +48,39 @@ export const ChefDatabase = app.firestore().collection('chefs');
 export const BlogDatabase = app.firestore().collection('blogs');
 export const NewsletterDatabase = app.firestore().collection('newsletter');
 
+
+
+export const fetchOrder = () => dispatch => {
+  OrderDatabase
+    .onSnapshot(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        const Data = {...doc.data(), id: doc.id}
+        dispatch({ type: ORDER_LIST, payload: Data });
+      })
+    })
+}
+
+export const registerUser = Data => dispatch => {
+  createUser(Data.email, Data.password)
+    .then(() => {
+      var user = onAuth;
+      dispatch({type: FETCH_USER, payload: user})
+    })
+    .catch(err => console.log(err))
+
+}
+
+export const loginUser = (email, password) => dispatch => {
+  signIn(email, password)
+    .then(() => {
+      auth.onAuthStateChanged(function(user){
+        if(user){
+          dispatch({ type: FETCH_USER, payload: user })
+        }
+      })
+    })
+    .catch(err => console.log(err));
+}
 
 export const postBlog = post => dispatch => {
   BlogDatabase
@@ -61,30 +94,24 @@ export const postBlog = post => dispatch => {
     })
 }
 
+
 export const fetchBlog = () => dispatch => {
   BlogDatabase
     .get()
     .then(querySnapshot => {
       querySnapshot.forEach(function(doc) {
         // doc.data() is never undefined for query doc snapshots
-        const Data = doc.data();
+        const Data = {...doc.data(), id: doc.id}
         //console.log(doc.id, " => ", doc.data());
         dispatch({ type: BLOG, payload: Data });
       });
     })
 };
 
-export const DeleteBlog = id => dispatch => {
-  BlogDatabase
-    .doc(id)
-    .delete()
-    .then(doc => {
-      alert("Document successfully deleted!" + doc);
-      dispatch({ type: DELETE_BLOG, payload: doc})
-    })
-    .catch(err => alert(err))
-}
-
+export const DeleteBlog = (id) => async dispatch => {  
+  var res = await BlogDatabase.doc(id).delete();
+  dispatch({ type: DELETE_BLOG, payload: res});
+};
 
 export const postNewsletter = email => {
   NewsletterDatabase
@@ -97,8 +124,7 @@ export const postReview = post => dispatch => {
   ReviewDatabase
     .add({
       img: post.img,
-      price: post.price,
-      title: post.title,
+      name: post.name,
       body: post.body
     })
     .then(res => {
@@ -113,7 +139,7 @@ export const fetchReview = () => dispatch => {
   .then(querySnapshot => {
     querySnapshot.forEach(function(doc) {
       // doc.data() is never undefined for query doc snapshots
-      const Data = doc.data();
+      const Data = {...doc.data(), id: doc.id}
       //console.log(doc.id, " => ", doc.data());
       dispatch({ type: FEEDBACK, payload: Data });
     });
@@ -151,7 +177,7 @@ export const fetchChef = () => dispatch => {
     .then(querySnapshot => {
       querySnapshot.forEach(function(doc) {
         // doc.data() is never undefined for query doc snapshots
-        const Data = doc.data();
+        const Data = {...doc.data(), id: doc.id}
         //console.log(doc.id, " => ", doc.data());
         dispatch({ type: CHEF, payload: Data });
       });
@@ -190,16 +216,17 @@ export const fetchCategory = () => dispatch => {
     .then(querySnapshot => {
       querySnapshot.forEach(function(doc) {
         // doc.data() is never undefined for query doc snapshots
-        const Data = doc.data();
+        const Data = {...doc.data(), id: doc.id}
         //console.log(doc.id, " => ", doc.data());
         dispatch({ type: CATEGORY, payload: Data });
       });
     })
 }
 
-export const DeleteRecipe = id => dispatch => {
+export const DeleteRecipe = data => dispatch => {
+  console.log(data)
   CategoryDatabase
-    .doc(id)
+    .doc()
     .delete()
     .then(doc => {
       alert("Document successfully deleted!" + doc);
@@ -209,3 +236,16 @@ export const DeleteRecipe = id => dispatch => {
 }
 
 
+export const fetchUser = () => async dispatch => {
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in.
+      dispatch({
+        type: FETCH_USER,
+        payload: true
+      });
+    } else {
+      // No user is signed in.
+    }
+  });
+};

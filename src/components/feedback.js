@@ -8,7 +8,8 @@ import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   card: {
-    minWidth: 275,
+    maxWidth: 275,
+    display: 'inline-block'
   },
   bullet: {
     display: 'inline-block',
@@ -23,13 +24,13 @@ const useStyles = makeStyles({
   },
 });
 
-function ReviewCard(views) {
+const ReviewCard = ({Views}) => {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
+
 
   return (
     <div>
-      {views.map(view => (
+      {Views.map(view => (
         <Card className={classes.card}>
           <CardContent>
             <Typography className={classes.title} color="textSecondary" gutterBottom>

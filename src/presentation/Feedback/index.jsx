@@ -1,15 +1,16 @@
 import React from 'react';
 import Comment from '../../components/feedback';
 import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
+import {getReviewState} from '../../store/selector';
+import NoContent from '../../views/NoContent';
 
 
-const mapStateToProps = state => ({ feedback: state.Feedback })
+const mapStateToProps = state => ({ feedback: getReviewState(state) })
 
 const ConnectedList = ({feedback}) => (
   <div className='pt-2'>
-    {feedback.length ? <Comment views={feedback} /> : 
-      <Typography variant='h5'>No Reviews </Typography>
+    {feedback.length ? <Comment Views={feedback} /> : 
+      <NoContent title="No Review availiable"/>
     }
   </div>
 );

@@ -1,33 +1,38 @@
 import React from 'react';
-import {FormGroup, FormLabel, Row, Col, FormControl} from 'react-bootstrap';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
+import {TextField} from '@material-ui/core';
+import classNames from 'classnames';
 
 
-const Input = ({type, src, placeholder, tag: Tag, className, label, ...props}) => {
-  const classes = classNames(className);
+
+const TextFieldInput = ({
+  input, 
+  label, 
+  className, 
+  type,
+  meta: { touched, error, warning},
+  ...props
+}) => {
+  const classes = classNames(className)
   return (
-    <FormGroup as={Row} controlId="controledInput">
-      <FormLabel column sm="2">
-        {label}
-      </FormLabel>
-      <Col sm="10">
-        <Tag className={classes} type={type} placeholder={placeholder} {...props}/>
-      </Col>
-    </FormGroup>
-  );
+    <div className="mt-3">
+      <TextField 
+        className={classes}
+        label={label}
+        {...input}
+        type={type}
+        {...props}
+      />
+      {touched &&
+        ((error && <span>{error}</span>) ||
+          (warning && <span>{warning}</span>))}
+    </div>
+  )
 };
 
-Input.propTypes = {
-  tag: PropTypes.elementType,
+TextFieldInput.propTypes = {
+  label: PropTypes.string,
   type: PropTypes.string,
-  placeholder: PropTypes.string,
-  label: PropTypes.string
 };
 
-Input.defaultProps = {
-  tag: FormControl,
-  type: 'text'
-}
-
-export default Input;
+export default TextFieldInput;

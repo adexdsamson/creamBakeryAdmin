@@ -1,22 +1,48 @@
 import React from 'react';
-import { Grid , Typography} from '@material-ui/core';
+import { Box , Typography, Card, CardMedia, CardContent, CardActions, Button, makeStyles} from '@material-ui/core';
+import smart from 'smart-truncate';
 
+const useStyles = makeStyles({
+  card: {
+    maxWidth: 345,
+    display: 'inline-block'
+  },
+});
 
-const SingleCat = ({views}) => (
-  <Grid container md={6}>
+const SingleCat = ({views, click}) => {
+  const classes = useStyles();
+  return (
+  <div style={{width: '100%'}}>
     {views.map(view => (
-      <div className="snack bg-white h-100 align-content-stretch">
-        <figure className="m-0">
-          <img src={view.img} alt='...' className="img-fluid"/>
-        </figure>
-        <div className="snack-inner-text py-3 px-4">
-          <span className="snack-price">{view.price}</span>
-          <Typography variant="h3">{view.title}</Typography>
-          <p className="lead">{view.body}</p>
-        </div>
-      </div>
+      <Box key={view.id} component='div' p={1} m={1} display='inline'>
+        <Card  className={classes.card}>
+          <CardMedia 
+            component='img'
+            alt='recipe image'
+            height='140'
+            image={view.img}
+          />
+          <CardContent>
+            
+            <Typography variant="h3">{view.title}</Typography>
+            <span>
+              <Typography variant='body2'>#{view.price}</Typography> 
+            </span>
+            <Typography variant="body1">{smart(view.body, 100)}</Typography>
+          </CardContent>
+          <CardActions>
+            <Button 
+              size="small" 
+              onClick={id => click(id)} 
+              color="primary"
+            >
+              Delete
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
     ))}
-  </Grid>
-);
+  </div>
+);}
 
 export default SingleCat;

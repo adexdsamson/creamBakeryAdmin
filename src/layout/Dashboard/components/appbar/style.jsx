@@ -1,7 +1,7 @@
 export default theme => ({
   root: {
     borderBottom: `1px solid ${theme.palette.border}`,
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: "#deb887",
     display: 'flex',
     alignItems: 'center',
     height: '64px',

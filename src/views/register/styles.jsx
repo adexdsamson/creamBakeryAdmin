@@ -128,23 +128,4 @@ export default theme => ({
       color: theme.palette.primary.main
     }
   },
-  fieldError: {
-    color: theme.palette.danger.main,
-    marginBottom: theme.spacing(2),
-    marginTop: theme.spacing.unit
-  },
-  submitError: {
-    color: theme.palette.danger.main,
-    alignText: 'center',
-    marginBottom: theme.spacing.unit,
-    marginTop: theme.spacing(2)
-  },
-  phoneNumber:{
-      marginTop: theme.spacing(2),
-    width: '100%',
-    display: 'grid'
-  },
-  successMessage: {
-    color: 'black'
-  }
 });

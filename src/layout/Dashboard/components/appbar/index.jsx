@@ -2,7 +2,9 @@ import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import compose from 'recompose/compose';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import {logOut} from '../../../../store/action';
 import { withStyles } from '@material-ui/core';
 import {IconButton, Toolbar, Typography} from '@material-ui/core';
 import {PowerSettingsNew} from '@material-ui/icons';
@@ -13,12 +15,14 @@ import style from './style';
 class Appbar extends Component {
   state = {  }
 
+  logout = () => {
+    this.props.logOut();
+  }
   
   render() { 
     const {
       classes,
       className,
-      title,
       isSidebarOpen,
       onToggleSidebar
     } = this.props;
@@ -43,7 +47,7 @@ class Appbar extends Component {
                 className={classes.title}
                 variant='h4'
               >
-                {title}
+                
               </Typography>
 
               <div className={classes.toolbarButtons}>
@@ -51,7 +55,7 @@ class Appbar extends Component {
                   edge="end"
                   aria-label="account of current user"
                   aria-haspopup="true"
-                  onClick={this.handleProfileMenuOpen}
+                  onClick={this.logout}
                   color="inherit"
                 >
                   <PowerSettingsNew />
@@ -81,4 +85,4 @@ Appbar.defaultProps = {
   onToggleSidebar: () => {}
 };
  
-export default compose(withRouter, withStyles(style))(Appbar);
+export default compose(withRouter, withStyles(style), connect(null, {logOut}))(Appbar);

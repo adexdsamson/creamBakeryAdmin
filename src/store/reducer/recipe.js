@@ -1,4 +1,4 @@
-import { CATEGORY } from '../action/type';
+import { CATEGORY, CLEARRECIPE } from '../action/type';
 
 
 const Category = (state = [], action) => {
@@ -15,6 +15,8 @@ const Category = (state = [], action) => {
           body: action.payload.body
         }
       ]
+    case CLEARRECIPE: 
+      return state = []
     default:
       return state;
   }

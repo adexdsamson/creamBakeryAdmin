@@ -1,15 +1,16 @@
 import React from 'react';
 import BlogList from '../../components/blog';
 import { connect } from 'react-redux';
-import { Typography } from '@material-ui/core';
+import {getBlogState} from '../../store/selector';
+import NoContent from '../../views/NoContent';
 
-const mapStateToProps = state => ({ blog: state.Blog });
+const mapStateToProps = state => ({ blog: getBlogState(state) });
 
 const ConnectedList = ({blog}) => (
 
   <div>
     {blog.length ? <BlogList views={blog} /> : 
-      <Typography variant="h5">No Blogs </Typography>
+      <NoContent title="No blog availiable"/>
     }
   </div>
 );

@@ -1,6 +1,6 @@
 export default theme => ({
   root: {
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: '#deb887',
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
@@ -56,10 +56,10 @@ export default theme => ({
     cursor: 'pointer',
     '&:hover': {
       backgroundColor: theme.palette.primary.light,
-      borderLeft: `4px solid ${theme.palette.primary.main}`,
+      borderLeft: `4px solid #deb887`,
       borderRadius: '4px',
       '& $listItemIcon': {
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.white,
         marginLeft: '-4px'
       }
     },
@@ -68,14 +68,14 @@ export default theme => ({
     }
   },
   activeListItem: {
-    borderLeft: `4px solid ${theme.palette.primary.main}`,
+    borderLeft: `4px solid ${theme.palette.primary.mai}`,
     borderRadius: '4px',
     backgroundColor: theme.palette.primary.light,
     '& $listItemText': {
-      color: theme.palette.text.primary
+      color: "#deb887"
     },
     '& $listItemIcon': {
-      color: theme.palette.primary.main,
+      color: theme.palette.primary.white,
       marginLeft: '-4px'
     }
   },

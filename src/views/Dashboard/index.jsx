@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { Dashboard as DashboardLayout } from '../../layout';
 
-import { Widget as Card } from '../../components/Cards';
+import { Widget as Card } from "../../components/Cards";
 
 import {
   DashboardOutlined as DashboardIcon,

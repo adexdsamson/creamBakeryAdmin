@@ -2,15 +2,32 @@
 import React from "react";
 import PropTypes from 'prop-types';
 import Tabs from "@material-ui/core/Tabs";
+import {makeStyles,} from '@material-ui/core';
 
+
+const Style = theme => ({
+  indicator: {
+    backgroundColor: "#ffffff"
+  }
+})
 
 const ElevatedTabs = ({value, change, children}) => {
-  
+  const classes = makeStyles(Style)
   return (
     <React.Fragment>
       <Tabs
         variant={"fullWidth"}
         value={value}
+        className={classes.indicator}
+        style={{
+          width: "100%",
+          borderRadius: '4px',
+          background: "#deb887",
+          padding: 10,
+          boxShadow: "0px 3px 15px rgba(34, 35, 58, 0.5)",
+          height: "100%",
+          backgroundColor: "#deb887"
+        }}
         onChange={change}
       >
         {children}
@@ -19,41 +36,6 @@ const ElevatedTabs = ({value, change, children}) => {
   );
 };
 
-ElevatedTabs.getTheme = muiBaseTheme => ({
-  MuiTabs: {
-    root: {
-      width: "100%",
-      borderRadius: muiBaseTheme.spacing.unit,
-      background: "linear-gradient(60deg, #ab47bc, #8e24aa)",
-      padding: 10,
-      boxShadow: "0px 3px 15px rgba(34, 35, 58, 0.5)"
-    },
-    indicator: {
-      height: "100%",
-      borderRadius: muiBaseTheme.spacing.unit,
-      backgroundColor: "rgba(255, 255, 255, .2)"
-    }
-  },
-  MuiTab: {
-    root: {
-      textTransform: "initial",
-      margin: `0 ${muiBaseTheme.spacing.unit * 2}px`,
-      minWidth: 0,
-      [muiBaseTheme.breakpoints.up("md")]: {
-        minWidth: 0
-      }
-    },
-    label: {
-      fontWeight: "normal",
-      letterSpacing: 0.5,
-      color: "#ffffff"
-    },
-    labelContainer: {
-      paddingLeft: 10,
-      paddingRight: 10
-    }
-  }
-});
 
 ElevatedTabs.propTypes = {
   children: PropTypes.node,

@@ -2,7 +2,6 @@ import { CHEF, DELETE_CHEF, CLEARCHEF } from '../action/type';
 
 
 const Chef = (state = [], action) => {
-  console.log(state)
   switch(action.type) {
     case CHEF: 
       return [

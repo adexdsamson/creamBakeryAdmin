@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-//import PropTypes from 'prop-types';
 import RecipeView from '../../presentation/Recipe';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
+import { Field } from 'redux-form';
+import renderInput from '../../components/renderInput';
+import renderBody from '../../components/renderTextarea';
+import Form from '../../components/Form';
 import {fetchCategory, postRecipe, storageRef} from '../../utilities/firebase';
-import {clearRecipe} from '../../store/action';
-import {checkValidityInput} from '../../utilities/checkValidityInput';
-import {Button} from 'react-bootstrap';
-import {Row, Col} from 'react-bootstrap';
-import FileUploader from 'react-firebase-file-uploader';
-import Input from '../../components/Input';
+import { clearRecipe } from "../../store/action";
 import ElevatedTab from '../../components/Tab';
 import Tab from "@material-ui/core/Tab";
 import { withStyles } from '@material-ui/core';
-import { Grid, Typography, CircularProgress} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+import { Grid, Typography} from '@material-ui/core';
+import { green } from "@material-ui/core/colors";
 import TabPanel from '../../components/TabPanel';
 import { CardBody as Card } from '../../components/Cards';
 import { Dashboard as DashboardLayout } from '../../layout';
-import RectImage from '../../components/RectImage';
+import Avatar from '../../components/Avatar';
 import Wallpaper from '../../assets/img/users/icon-72x72.png';
 
 
@@ -37,57 +35,19 @@ const styles = theme => ({
   buttonProgress: {
     color: green[500],
   },
+  indicator: {
+    backgroundColor: "#ffffff"
+  }
 })
 
 class Recipe extends Component {
   state = { 
     id: 0,
     value: "",
-    isFormValid: false,
-    success: false,
-    isLoading: false,
-    formError: false,
     imageURL: '',
     isUploading: false,
     progress: 0,
-    form: {
-      title: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-      price: {
-        elementType: "input",
-        elementConfig: {
-          type: "number"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-      body: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      }
-    }
+    
   }
 
   handleChangeUsername = event =>
@@ -100,21 +60,17 @@ class Recipe extends Component {
   };
 
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleSubmit = values => {
     this.setState({ isLoading: true });
-    let submitData = {};
-    let validForm = true;
-    for (let key in this.state.form) {
-      submitData[key] = this.state.form[key].value;
-      validForm = this.state.form[key].valid && validForm;
+    let submitData = {
+      title: values.title,
+      price: values.price,
+      body: values.body,
+      img: this.state.imageURL
     };
-    if(validForm) {
-      let Data = {...submitData, img: this.state.imageURL}
-      this.props.postRecipe(Data);
-      this.setState({ isLoading: false});
-      alert('Post Succesful!');
-    };
+    this.props.postRecipe(submitData);
+    this.setState({ isLoading: false});
+    alert('Post Succesful!');
   };
 
 
@@ -130,35 +86,16 @@ class Recipe extends Component {
       });
   };
 
-  inputHandler = (e, form) => {
-    const updatedForm = {
-      ...this.state.form
-    };
-    const updatedFormElement = {
-      ...updatedForm[form]
-    };
-    let formValid = true;
-    updatedFormElement.value = e.target.value;
-    updatedFormElement.valid = checkValidityInput(
-      updatedFormElement.value,
-      updatedFormElement.validation
-    );
-    updatedFormElement.touch = true;
-    updatedForm[form] = updatedFormElement;
-
-    for (let eachInput in updatedForm) {
-      formValid = updatedForm[eachInput].valid && formValid;
-      //console.log(formValid)
-    }
-    this.setState({ form: updatedForm, isFormValid: formValid });
-  };
-
   componentDidMount(){
     this.props.fetchCategory();
   }
 
   componentWillUnmount(){
     this.props.clearRecipe();
+  }
+
+  handleDelete = (id) => {
+    this.props.DeleteRecipe(id)
   }
 
   handleChange = (e, val) => {
@@ -169,96 +106,88 @@ class Recipe extends Component {
 
   render() { 
     const { classes } = this.props;
-    const { id, isLoading, isFormValid} = this.state;
+    const { id, isUploading, progress, imageURL } = this.state;
     
-    return ( 
-      <DashboardLayout title='Recipe' subtitle='Share everyday cooking inspiration on Allrecipes' icon={<RecipeIcon />}>
-        
-          <Grid className={classes.root} container>
-            <ElevatedTab
-              value={id}
-              change={(e, value) => this.handleChange(e, value)}
-            >
-              <Tab label='Recipes' />
-              <Tab label='Add' />
-            </ElevatedTab>
-          </Grid>
-          <Grid>
-            <TabPanel value={id} index={0}>
-              <Grid container sm={12}>
-                <Card>
-                  <RecipeView />
-                </Card>
-              </Grid>
-            </TabPanel>
-            <TabPanel value={id} index={1}>
-              <Grid container sm={12}>
-                <Card>
-                  <Typography variant="h5">Create Recipe</Typography>
-                  <Grid>
-                    <div className="container text-center">
-                      <RectImage 
-                        width={150}
-                        height={100} 
-                        src={this.state.imageURL || Wallpaper}/>
-                    </div>
-                  </Grid>
-                  <Grid lg={12}>
-                    <form className="mt-4" onSubmit={this.handleSubmit}>
-                      <Input 
-                        label="Title" 
-                        placeholder="Title"
-                        onChange={e => this.inputHandler(e, 'title')}
-                        {...this.state.form.title.elementConfig}
-                      />
-                      <Input 
-                        type="number" 
-                        label="Price" 
-                        placeholder="Price"
-                        onChange={e => this.inputHandler(e, 'price')}
-                        {...this.state.form.price.elementConfig}
-                      />
-                      <Input 
-                        tag="textarea" 
-                        className="form-control" 
-                        label="Body" 
-                        placeholder="Body"
-                        onChange={e => this.inputHandler(e, 'body')}
-                        {...this.state.form.body.elementConfig}
-                      />
-                      <Row>
-                        <Col sm="2">
-                          <Typography variant="h5">Image</Typography>
-                        </Col>
-                        <Col sm="10">
-                          {this.state.isUploading ? <p>Progress: {this.state.progress}</p> :
-                            <FileUploader
-                              accept="image/*"
-                              name="thumbnail"
-                              randomizeFilename
-                              storageRef={storageRef}
-                              onUploadStart={this.handleUploadStart}
-                              onUploadError={this.handleUploadError}
-                              onUploadSuccess={this.handleUploadSuccess}
-                              onProgress={this.handleProgress}
-                            />
-                          
-                          }
-                        </Col>
-                      </Row>
-                      <Button type="submit" variant="outline-success" disabled={isFormValid && isLoading} className="pr-5 mt-4 pl-5">
-                        {isFormValid && isLoading ? <CircularProgress size={24} className={classes.buttonProgress} /> : 'Post' }
-                      </Button>
-                    </form>
-                  </Grid>
-                </Card>
-              </Grid>
-            </TabPanel>
-          </Grid>
-        
+    return (
+      <DashboardLayout
+        title="Recipe"
+        subtitle="Share everyday cooking inspiration on Allrecipes"
+        icon={<RecipeIcon />}
+      >
+        <Grid className={classes.root} container>
+          <ElevatedTab
+            value={id}
+            change={(e, value) => this.handleChange(e, value)}
+          >
+            <Tab label="Recipes" />
+            <Tab label="Add" />
+          </ElevatedTab>
+        </Grid>
+        <Grid>
+          <TabPanel value={id} index={0}>
+            <Grid container sm={12}>
+              <Card>
+                <Typography variant="body2">Chef list</Typography>
+                <div className="mt-4"></div>
+                <RecipeView />
+              </Card>
+            </Grid>
+          </TabPanel>
+          <TabPanel value={id} index={1}>
+            <Grid container sm={12}>
+              <Card>
+                <Typography variant="body2">Create Recipe</Typography>
+                <Grid>
+                  <div className="container text-center">
+                    <Avatar size={150} src={imageURL || Wallpaper} />
+                  </div>
+                </Grid>
+                <Grid lg={12}>
+                  <Form
+                    className="mt-4"
+                    onSubmit={values => this.handleSubmit(values)}
+                  >
+                    <Field
+                      name="title"
+                      label="Title"
+                      placeholder="Title"
+                      component={renderInput}
+                      type="text"
+                    />
+                    <Field
+                      type="number"
+                      label="Price"
+                      placeholder="Price"
+                      name="price"
+                      component={renderInput}
+                    />
+                    <Field
+                      name="body"
+                      component={renderBody}
+                      label="Body"
+                      placeholder="Body"
+                      type="text"
+                    />
+                    <Field
+                      name="image"
+                      type="file"
+                      label="image"
+                      component={renderInput}
+                      onUploadStart={this.handleUploadStart}
+                      onProgress={this.handleProgress}
+                      onUploadError={this.handleUploadError}
+                      isUploading={isUploading}
+                      progress={progress}
+                    />
+                  </Form>
+                </Grid>
+              </Card>
+            </Grid>
+          </TabPanel>
+        </Grid>
       </DashboardLayout>
-     );
+    );
   }
 }
  
-export default compose(withStyles(styles), connect(null, {fetchCategory, postRecipe, clearRecipe}))(Recipe);
+export default compose(withStyles(styles), connect(null, {fetchCategory, postRecipe, clearRecipe }))(Recipe);

@@ -1,12 +1,14 @@
 import {
-  FETCH_USER,
   CLEARBLOG,
   CLEARCATEGORY,
   CLEARFEEDBACK,
   CLEARCHEF,
   CLEARREVIEW,
   CLEARRECIPE,
-  CLEARORDER
+  CLEARORDER,
+  LOGOUT,
+  OPENRESPONSE,
+  CLOSERESPONSE
 } from './type';
 
 
@@ -17,6 +19,14 @@ export const clearBlog = () => dispatch => {
 
 export const clearCategory = () => dispatch => {
   dispatch({ type: CLEARCATEGORY, })
+}
+
+export const showResponseBox = () => dispatch => {
+  dispatch({ type: OPENRESPONSE, payload: true})
+}
+
+export const closeResponseBox = () => dispatch => {
+  dispatch({ type: CLOSERESPONSE, payload: false })
 }
 
 export const clearFeedback = () => dispatch => {
@@ -43,12 +53,6 @@ export const dispatchAllOrder = () => async dispatch => {
  
 }
 
-export const fetchUser = () => async dispatch => {
-  // feetch user's auth change state
- 
-  //console.log("auth res",res);
-  dispatch({
-    type: FETCH_USER,
-    //payload: 
-  });
-};
+export const logOut = () => dispatch => {
+  dispatch({ type: LOGOUT})
+}

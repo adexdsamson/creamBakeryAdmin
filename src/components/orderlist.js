@@ -2,14 +2,15 @@ import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const OrderList = ({id, name }) => (
-  
+const OrderList = ({views}) => (
   <ListGroup>
-    <Link to={`/orderlist/${id}`} className='link'>
-      <ListGroup.Item key={id}>
-        {name}
-      </ListGroup.Item>
-    </Link>
+    {views.map(view => (
+      <Link to={`/orderlist/${view.id}`} className='link'>
+        <ListGroup.Item key={view.id}>
+          {view.name}
+        </ListGroup.Item>
+      </Link>
+    ))}
   </ListGroup>   
 )
 

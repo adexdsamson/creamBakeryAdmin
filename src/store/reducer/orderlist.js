@@ -5,12 +5,17 @@ export default (state = [], action) => {
   switch (action.type) {
     case ORDER_LIST:
       const newOrder = {
-        id: action.payload._id,
+        id: action.payload.id,
         name: action.payload.firstName + ' ' + action.payload.lastName,
-        //phone: action.payload.phone,
-        email: action.payload.email
+        email: action.payload.email,
+        color: action.payload.color,
+        cake: action.payload.cake,
+        budget: action.payload.budget,
+        address: action.payload.address,
+        lg: action.payload.lg,
+        occasion: action.payload.occasion,
+        size: action.payload.size
       };
-      console.log('orderlist-reduxStore', newOrder);
       return [
         ...state,
         newOrder

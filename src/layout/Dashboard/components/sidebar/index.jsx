@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import {Button,withStyles,Divider, Typography, List, ListItem, ListItemIcon, ListItemText} from '@material-ui/core';
+import {withStyles,Divider, Typography, List, ListItem, ListItemIcon, ListItemText} from '@material-ui/core';
 import {
-  DashboardOutlined as DashboardIcon,
   PostAddOutlined as BlogIcon,
   FastfoodOutlined as RecipeIcon,
   MailOutlined as MailIcon,
@@ -13,12 +12,11 @@ import {
   ShoppingCart as ShoppingIcon
 } from '@material-ui/icons';
 
-import { MdPowerSettingsNew } from "react-icons/md";
 import Avatar from '../../../../components/Avatar';
 import Styles from './styles';
 
 class SideBar extends Component {
-  state = { view: [] }
+  
   render() { 
     const {classes, className} = this.props;
     const rootClassName = classNames(classes.root, className);
@@ -34,17 +32,6 @@ class SideBar extends Component {
         <Divider className={classes.logoDivider}/>
 
         <List component='div' disablePadding>
-          <ListItem
-            activeClassName={classes.activeListItem}
-            className={classes.listItem}
-            component={NavLink}
-            to='/dashboard'
-          >
-            <ListItemIcon className={classes.listItemIcon}>
-             <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText classes={classes.listItemText} primary='Dashboard'/>
-          </ListItem>
 
           <ListItem
             activeClassName={classes.activeListItem}

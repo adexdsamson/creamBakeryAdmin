@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import compose from 'recompose/compose';
 import { withStyles } from '@material-ui/core';
 import {connect} from 'react-redux';
-import { postNewsletter, storageRef} from '../../utilities/firebase';
-import {checkValidityInput} from '../../utilities/checkValidityInput';
-import {Button} from 'react-bootstrap';
+import { postNewsletter} from '../../utilities/firebase';import renderInput from '../../components/renderInput';
+import { Field } from 'redux-form';
+import renderBody from '../../components/renderTextarea';
+import Form from '../../components/Form';
 import {Row, Col} from 'react-bootstrap';
-import Input from '../../components/Input';
-import { Grid, Typography, CircularProgress} from '@material-ui/core';
+import { Grid, Typography} from '@material-ui/core';
 import { green } from '@material-ui/core/colors';
 import { CardBody as Card } from '../../components/Cards';
 import { Dashboard as DashboardLayout } from '../../layout';
@@ -30,117 +30,60 @@ const styles = theme => ({
 
 class Newsletter extends Component {
   state = { 
-    isFormValid: false,
-    success: false,
-    isLoading: false,
-    formError: false,
     imageURL: '',
     isUploading: false,
     progress: 0,
-    form: {
-      subject: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-      body: {
-        elementType: "input",
-        elementConfig: {
-          type: "text"
-        },
-        value: "",
-        validation: {
-          required: true
-        },
-        valid: false,
-        touch: false
-      },
-    }
   }
 
-  handleSubmit = e => {
-    e.preventDefault();
+  handleSubmit = values => {
     this.setState({ isLoading: true });
-    let submitData = {};
-    let validForm = true;
-    for (let key in this.state.form) {
-      submitData[key] = this.state.form[key].value;
-      validForm = this.state.form[key].valid && validForm;
+    let submitData = {
+      img: this.state.imageURL
     };
-    if(validForm) {
-      let Data = {...submitData, img: this.state.imageURL}
-      //this.props.postRecipe(Data);
-      this.setState({ isLoading: false});
-      alert('Post Succesful!');
-    };
+    this.props.postRecipe(submitData);
+    this.setState({ isLoading: false});
+    alert('Post Succesful!');
+    
   };
-
-  inputHandler = (e, form) => {
-    const updatedForm = {
-      ...this.state.form
-    };
-    const updatedFormElement = {
-      ...updatedForm[form]
-    };
-    let formValid = true;
-    updatedFormElement.value = e.target.value;
-    updatedFormElement.valid = checkValidityInput(
-      updatedFormElement.value,
-      updatedFormElement.validation
-    );
-    updatedFormElement.touch = true;
-    updatedForm[form] = updatedFormElement;
-
-    for (let eachInput in updatedForm) {
-      formValid = updatedForm[eachInput].valid && formValid;
-      //console.log(formValid)
-    }
-    this.setState({ form: updatedForm, isFormValid: formValid });
-  };
-
 
 
   render() {
-    const { classes } = this.props;
-    const { isFormValid, isLoading } = this.state;
-    return ( 
+    const { classes, email } = this.props;
+    
+    const Email = this.state.isUploading ? email+'Emails' : 'None';
+    return (
       <DashboardLayout title="Newsletter" subtitle="" icon={<NewsIcon />}>
         <Grid className={classes.root} spacing={4}>
-          <Card >
-            <Typography variant="h5">Newsletter</Typography>
+          <Card>
+            <Typography variant="body2">Newsletter</Typography>
             <Grid>
-              <form className="mt-3" onSubmit={this.handleSubmit}>
-                <Input 
-                  label="Subject" 
+              <Form
+                className="mt-3"
+                onSubmit={values => this.handleSubmit(values)}
+              >
+                <Field
+                  label="Subject"
                   placeholder="Subject"
-                  onChange={e => this.inputHandler(e, 'subject')}
-                  {...this.state.form.subject.elementConfig}
+                  type="text"
+                  component={renderInput}
                 />
                 <Row>
-                  <Col sm="2">Number of Email</Col>
-                  <Col sm="10">13 Emails</Col>
+                  <Col sm="2">
+                    <Typography variant="h5">Number of Email</Typography>
+                  </Col>
+                  <Col sm="10">
+                    <Typography variant="body1">{Email}</Typography>
+                  </Col>
                 </Row>
                 <hr />
-                <Input 
-                  tag="textarea" 
-                  className="form-control" 
-                  label="Body" 
+                <Field
+                  name="body"
+                  component={renderBody}
+                  label="Body"
                   placeholder="Body"
-                  onChange={e => this.inputHandler(e, 'body')}
-                  {...this.state.form.body.elementConfig}
+                  type="text"
                 />
-
-                <Button type="submit" variant="outline-success" disabled={isFormValid && isLoading} className="pr-5 mt-4 pl-5">
-                  {isFormValid && isLoading ? <CircularProgress size={24} className={classes.buttonProgress} /> : 'Post' }
-                </Button>
-              </form>
+              </Form>
             </Grid>
           </Card>
         </Grid>

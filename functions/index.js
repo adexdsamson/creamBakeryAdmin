@@ -2,20 +2,20 @@ var accountSid = 'ACa2afb0ebd85e6c99409845fddaeedd54';
 var authToken =  'ecb136a7693c0524c50bea709c5d121';
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const nodemailer = require('nodemailer');
-const socketIo = require('socket.io');
-const twilio = require('twilio');
-const client = new twilio(accountSid, authToken);
-const gmailEmail = functions.config().gmail.id;
-const gmailPassword = functions.config().gmail.secret;
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
-const { Receipt } = require('./receipt'); 
+//const nodemailer = require('nodemailer');
+//const socketIo = require('socket.io');
+//const twilio = require('twilio');
+//const client = new twilio(accountSid, authToken);
+//const gmailEmail = functions.config().gmail.id;
+//const gmailPassword = functions.config().gmail.secret;
+//const mailTransport = nodemailer.createTransport({
+  //service: 'gmail',
+  //auth: {
+   // user: gmailEmail,
+   // pass: gmailPassword,
+ // },
+//});
+//const { Receipt } = require('./receipt'); 
 admin.initializeApp();
 
 
@@ -32,59 +32,17 @@ exports.helloWorld = functions.https.onRequest(async (req, res) => {
   res.send("Hello from Firebase!");
 });
 
-exports.newUserCreated = functions.https.onRequest(async(req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  admin.auth().createUserWithEmailAndPassword(email, password)
-  .then(function(res) {
-    res.json({
-      message: 'Success',
-      code: 'ok'
-    })
-  })
-  .catch(function(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    res.json({
-      message: errorMessage,
-      code: errorCode
-    })
-  })
-})
-
-exports.logOut = functions.https.onRequest(async(req, res) => {
-  admin.auth().signOut()
-  .then(function(res) {
-    res.json({
-      message: 'Success',
-      code: 'ok'
-    })
-  })
-  .catch(function(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    res.json({
-      message: errorMessage,
-      code: errorCode
-    })
-  })
-})
-
-
-
-exports.onPurchase = functions.analytics.event('in_app_purchase').onLog(event => {
-  // Analytical function
-});
 
 exports.onCreateOrder = functions.https.onRequest(async(req, res) => {
-  const Order = req.data.order;
+  const Order = req.data;
 
   const writeResult = await admin.firestore().collection('order').add(Order);
   res.json({
     result: `Message with ID: ${writeResult.id} added.`
   });
-})
+});
 
+/*
 exports.sendToAdmin = functions.firestore
   .document('order/{documentId}')
   .onCreate((change, context) => { 
@@ -98,37 +56,32 @@ exports.sendToAdmin = functions.firestore
   });
 
 
-exports.addMessage = functions.https.onRequest(async (req, res) => {
-  // Grab the text parameter.
-  const original = req.query.text;
-  // Push the new message into the Realtime Database using the Firebase Admin SDK.
-  const snapshot = await admin.database().ref('/messages').push({original: original});
-  // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
-  res.redirect(303, snapshot.ref.toString());
-});
 
-exports.sendMail = functions.https.onRequest((req, res,) => {
+
+
+//exports.sendMail = functions.https.onRequest((req, res,) => {
   // [END onDeleteTrigger]
-  const email = req.data.email;
-  const template = req.data.phone;
-  sendConfirmEmail(template, email) ;
+  //const email = req.data.email;
+ // const template = req.data.phone;
+  //sendConfirmEmail(template, email) ;
 
-  res.json({
+  //res.json({
 
-  });
-});
+ // });
+//});
 
-exports.sendWhatsapp = functions.https.onRequest((req, res) => {
-  const phone = req.data.phone;
-  const template = req.data.template;
-  const id = req.data.id;
-  WhatsAppMessage(id, template, phone);
-  res.json({
+//exports.sendWhatsapp = functions.https.onRequest((req, res) => {
+  ///const phone = req.data.phone;
+  //const template = req.data.template;
+  //const id = req.data.id;
+  //WhatsAppMessage(id, template, phone);
+  //res.json({
 
-  });
-})
+ // });
+//})
   
 // Sends a comfirmation email to the given user.
+/*
 async function sendConfirmEmail(template, email) {
   const mailOptions = {
     from: `${APP_NAME} <noreply@creambakery.com>`,
@@ -152,3 +105,4 @@ async function WhatsAppMessage(id, phone, date) {
     to: `whatsapp:+234${phone}` 
   })
 }
+*/

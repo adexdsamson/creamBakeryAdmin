@@ -5,9 +5,10 @@ import compose from 'recompose/compose';
 import { Dashboard as DashboardLayout } from '../../layout';
 import { CardBody as Card } from '../../components/Cards';
 import {clearOrder} from '../../store/action';
+import {fetchOrder} from '../../utilities/firebase';
 import OrderView from '../../presentation/Order';
 //import { dispatchOrder } from '../../store/action';
-import { SubscriberOrder } from  '../../api';
+//import { SubscriberOrder } from  '../../api';
 import { Grid, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 
@@ -25,11 +26,12 @@ class Order extends Component {
   state = { value: 0 }
 
   componentDidMount() {
-    SubscriberOrder((err, change) => this.setState({ order: change }));
+    this.props.fetchOrder();
+    //SubscriberOrder((err, change) => this.setState({ order: change }));
   }
-  componentWillUnmount(){
-    this.props.clearOrder();
-  }
+  //componentWillUnmount(){
+    //this.props.clearOrder();
+ // }
   render() { 
     const { classes } = this.props;
     
@@ -38,6 +40,8 @@ class Order extends Component {
         <div className={classes.root}>
           <Grid>
             <Card>
+              <Typography variant="body2">Order list</Typography>
+              <div className="mt-4"></div>
               <OrderView />
             </Card>
           </Grid>
@@ -53,4 +57,4 @@ Order.propTypes = {
 
 
  
-export default compose(connect(null, {clearOrder}), withStyles(styles))(Order);
+export default compose(connect(null, {fetchOrder,clearOrder}), withStyles(styles))(Order);
