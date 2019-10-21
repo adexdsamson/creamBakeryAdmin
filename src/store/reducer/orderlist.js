@@ -1,11 +1,7 @@
-import { ORDER_LIST } from '../action/type';
+import { ORDER_LIST, CLEARORDER } from '../action/type';
 
-const initialState = {
-  order: []
 
-}
-
-export default (state = initialState, action) => {
+export default (state = [], action) => {
   switch (action.type) {
     case ORDER_LIST:
       const newOrder = {
@@ -15,10 +11,12 @@ export default (state = initialState, action) => {
         email: action.payload.email
       };
       console.log('orderlist-reduxStore', newOrder);
-      return {
+      return [
         ...state,
-        order: [...state.order, newOrder]
-      };
+        newOrder
+      ];
+    case CLEARORDER: 
+      return state = []
     default:
       return state;
   }

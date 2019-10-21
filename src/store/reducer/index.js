@@ -1,8 +1,17 @@
 import { combineReducers } from 'redux';
 import User from './user';
-import OrderList from './orderlist';
+import Order from './orderlist';
+import Recipe from './recipe';
+import Chef from './chef';
+import Blog from './blog';
+import Feedback from './feedback';
 
 
 export default combineReducers({
-  User, OrderList
+  User,
+  Order, 
+  Recipe,
+  Chef,
+  Blog,
+  Feedback
 });
